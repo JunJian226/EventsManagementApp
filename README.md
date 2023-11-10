@@ -2,7 +2,7 @@
 
 ### Description
 
-University Assignment Project written by Jun Woo in collaboration with Gunnraj Dhaliwal.
+University Assignment Project written by Jun Woo (Student No: 33469660) in collaboration with Gunnraj Dhaliwal.
 
 ### Running Steps
 
