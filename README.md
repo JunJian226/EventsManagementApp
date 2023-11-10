@@ -9,7 +9,7 @@ University Assignment Project written by Jun Woo (Student No: 33469660) in colla
 1. Open a terminal in the folder containing package.json
 2. Run `npm install` (installs the dependencies)
 3. Run `node server.js` (starts the server)
-4. The url for the browser will be in the terminal (e.g. http://localhost:8080/)
+4. Once "Connected Successfully" is outputted to the terminal, head to http://localhost:8080/
 
 ### Postman Info
 
