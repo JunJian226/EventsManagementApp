@@ -2,8 +2,8 @@
 
 ### Description
 
-Simple Events Management Website written by Jun Woo (Student No: 33469660) in collaboration with Gunnraj Dhaliwal.
-Project is written for a University Assignment.
+Simple Events Management Website written by Jun Woo (Student No: 33469660) in collaboration with Gunnraj Dhaliwal. \n
+Project is written for a University Assignment. \n
 Utilizes Express.JS, MongoDB, RESTful API, HTML, and Bootstrap.
 
 ### Running Steps
