@@ -1,5 +1,9 @@
 # FIT2095 Assignment Repository
 
+### Description
+
+University Assignment Project written by Jun Woo in collaboration with Gunnraj Dhaliwal.
+
 ### Running Steps
 
 1. Open a terminal in the folder containing package.json
