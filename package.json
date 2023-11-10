@@ -1,0 +1,19 @@
+{
+  "name": "assignment2",
+  "version": "1.0.0",
+  "description": "FIT2095 assignment 2",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Jun and Gunnraj",
+  "license": "ISC",
+  "dependencies": {
+    "bootstrap": "^5.3.1",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "html": "^1.0.0",
+    "mongoose": "^7.5.0"
+  }
+}

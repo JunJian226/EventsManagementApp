@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: models/event-category.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: models/event-category.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/** 
+ * @author Jun Jian &lt;jwoo0046@student.monash.edu>
+ */
+
+/** 
+ * Mongoose Schema and Model for Category class
+ * @requires mongoose
+ */
+
+/** 
+ * Mongoose module 
+ * @constant
+*/
+const mongoose = require("mongoose");
+
+/** 
+ * Schema for a Category document
+ * @constant
+*/
+const categorySchema = new mongoose.Schema({
+    id: {
+        type: String,
+    },
+
+    name: {
+        type: String,
+        validate: {
+            validator: function(value){
+                /** A regular expression that matches any combination of just alphanumeric values and spaces
+                /*  Basically this regexp mean from the start(^) and end($),
+                /*      there must be one or more alphanumeric value [a-zA-Z0-9]+  , 
+                /*      followed by a space 0 or more times [ ]*
+                /*      this combination is repeated one or more times ( ... )+
+                */      
+                const possibleValues = /^([a-zA-Z0-9]+[ ]*)+$/
+                return possibleValues.test(value)
+            },
+            message: "Name can only contain alphanumeric values. Name cannot start with space. Name must have atleast one alphanumeric value."
+        },
+        required: true
+    },
+
+    description: {
+        type: String
+    },
+
+    image: {
+        type: String
+    },
+
+    createdAt: {
+        type: Date,
+        default: new Date(),
+    },
+
+    eventsList: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Event",
+    }]
+})
+
+/** 
+* Generates a random ID following the format of an ID. 
+* @return {string} the string of ID generated.
+*/
+function generateID(){
+    /** 
+    * Function that generates a string of random uppercase characters.
+    * @param {number} [amount=1] - the number of random characters to generate
+    * @return {string} the string of random uppercase characters generated
+    */
+    const generateRandomCharacters = (amount = 1) => {
+        /** 
+         * Unicode for the first uppercase character
+         * @constant
+         */
+        const UPPERCASE_UNICODE = 65;
+
+        /** 
+         * The string of random uppercase character generated to be returned
+         * @type {string}
+         */
+        let retString = ""
+        for(let no = 0; no &lt; amount; no++){
+            retString += String.fromCharCode( UPPERCASE_UNICODE + Math.floor(Math.random()*26) );
+        }
+        return retString;
+    }
+
+    /** 
+     * Function that generates a string of random numbers.
+     * @param {number} [amount=1] - the number of digits to generate
+     * @return {string} the string of digits generated.
+     */
+    const generateRandomNumbers = (amount = 1) => {
+        /** 
+         * The string of random number digits generated to be returned
+         * @type {string}
+         */
+        let retString = ""
+        for(let no = 0; no &lt; amount; no++){
+            retString += Math.floor(Math.random()*10);
+        }
+        return retString;
+    }
+
+    return `C${generateRandomCharacters(2)}-${generateRandomNumbers(4)}`
+}
+
+/** 
+ * Model for a Category document based on its Schema
+ * @constant
+*/
+const Category = mongoose.model("Category", categorySchema)
+
+module.exports = { 
+    generateID, 
+    Category
+}
+
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#Category">Category</a></li><li><a href="global.html#CategoryRouter">Category Router</a></li><li><a href="global.html#CategoryAPIRouter">CategoryAPI Router</a></li><li><a href="global.html#DELETE/DeleteCategory">DELETE/ Delete Category</a></li><li><a href="global.html#EJSViewEngine">EJS View Engine</a></li><li><a href="global.html#EncodedDataParser">Encoded Data Parser</a></li><li><a href="global.html#Event">Event</a></li><li><a href="global.html#EventRouter">Event Router</a></li><li><a href="global.html#EventAPIRouter">EventAPI Router</a></li><li><a href="global.html#GET/AddingCategory">GET/ Adding Category</a></li><li><a href="global.html#GET/AddingEvent">GET/ Adding Event</a></li><li><a href="global.html#GET/Categorydetails">GET/ Category details</a></li><li><a href="global.html#GET/DeletingEvent">GET/ Deleting Event</a></li><li><a href="global.html#GET/Eventdetails">GET/ Event details</a></li><li><a href="global.html#GET/ListCategories">GET/ List Categories</a></li><li><a href="global.html#GET/ListEvents">GET/ List Events</a></li><li><a href="global.html#GET/Showsoldoutevents">GET/ Show sold out events</a></li><li><a href="global.html#GET/ShowingEvents">GET/ Showing Events</a></li><li><a href="global.html#GET/View-Categories">GET/ View-Categories</a></li><li><a href="global.html#GET/delete-category">GET/ delete-category</a></li><li><a href="global.html#GET/indexpage">GET/ index page</a></li><li><a href="global.html#GET/search-category">GET/ search-category</a></li><li><a href="global.html#Handle404Errors">Handle 404 Errors</a></li><li><a href="global.html#Operation">Operation</a></li><li><a href="global.html#POST/AddingCategory">POST/ Adding Category</a></li><li><a href="global.html#POST/AddingEvent">POST/ Adding Event</a></li><li><a href="global.html#POST/Adding-Category">POST/ Adding-Category</a></li><li><a href="global.html#POST/delete-category">POST/ delete-category</a></li><li><a href="global.html#POST/search-category">POST/ search-category</a></li><li><a href="global.html#PUT/UpdatingCategory">PUT/ Updating Category</a></li><li><a href="global.html#PUT/UpdatingEvent">PUT/ Updating Event</a></li><li><a href="global.html#SetViewEngine">Set View Engine</a></li><li><a href="global.html#StaticBootstrapCSS">Static Bootstrap CSS</a></li><li><a href="global.html#StaticImages">Static Images</a></li><li><a href="global.html#VIEWS_PATH">VIEWS_PATH</a></li><li><a href="global.html#app">app</a></li><li><a href="global.html#categoryAPI">categoryAPI</a></li><li><a href="global.html#categoryRouter">categoryRouter</a></li><li><a href="global.html#categorySchema">categorySchema</a></li><li><a href="global.html#connect">connect</a></li><li><a href="global.html#createNewEvent">createNewEvent</a></li><li><a href="global.html#eventAPI">eventAPI</a></li><li><a href="global.html#eventRouter">eventRouter</a></li><li><a href="global.html#eventSchema">eventSchema</a></li><li><a href="global.html#express">express</a></li><li><a href="global.html#formatDuration">formatDuration</a></li><li><a href="global.html#generateID">generateID</a></li><li><a href="global.html#generateRandomAlphabeticString">generateRandomAlphabeticString</a></li><li><a href="global.html#generateRandomNumbers">generateRandomNumbers</a></li><li><a href="global.html#initialiseOperation">initialiseOperation</a></li><li><a href="global.html#mongoose">mongoose</a></li><li><a href="global.html#operationSchema">operationSchema</a></li><li><a href="global.html#path">path</a></li><li><a href="global.html#router">router</a></li><li><a href="global.html#updateOperation">updateOperation</a></li><li><a href="global.html#url">url</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Fri Sep 15 2023 23:24:32 GMT+1000 (Australian Eastern Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

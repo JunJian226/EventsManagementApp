@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en" data-bs-theme="auto">
+    <head>
+        <title>List All Events Page</title>
+        <link href="/bootstrap.min.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <!-- Display the static image of the event -->
+        <img src="<%= event.image %>" style="width: 100%;" height="500">
+        </br></br>
+        <!-- An album with a container of the event and its details with custom positioning-->
+        <div class="album py-5">
+            <div class="container">
+                <p class="display-2 text-center"> <%= event.name %></p>
+                <div class="row bg-light">
+                        <div class="col">
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <!-- Lists all the event attributes -->
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item"><b><h3>Event ID</h3> </b><%= event.eventId%></li>
+                                        <li class="list-group-item"><b><h3>Name</h3>  </b><%= event.name%></li>
+                                        <li class="list-group-item"><b><h3>Description</h3>  </b><%= event.description%></li>
+                                        <li class="list-group-item"><b><h3>Start Date Time</h3>  </b><%= startTime %></li>
+                                        <li class="list-group-item"><b><h3>End Date Time</h3>  </b><%= endTime %></li>
+                                        <li class="list-group-item"><b><h3>Duration</h3>  </b><%= duration %></li>
+                                        <!-- This will produce a checked or unchecked tickbox depending on whether the event is active -->
+                                        <li class="list-group-item"><b><h3>Is Active</h3>  </b><input type="checkbox" disabled <%= event.isActive?"checked":""%>></li>
+                                        <li class="list-group-item"><b><h3>Capacity</h3>  </b><%= event.capacity %></li>
+                                        <li class="list-group-item"><b><h3>Tickets Available</h3>  </b><%= event.ticketsAvailable %></li>
+                                        <li class="list-group-item"><b><h3>Category Id</h3>  </b><%= categoryIds %></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Newline spacing to beautify html -->
+        </br>
+        <!-- Container of redirecting buttons with custom layout and positoning -->
+        <div style="height:0;width:80%;padding-bottom:20%;padding-left:11.5%">
+            <div class="container">
+                <a type="button" class="btn btn-primary" href="/">Back to Homepage</a>
+                <a type="button" class="btn btn-primary" href="/event/Gunnraj/events">Go to Current Events List</a>
+            </div>
+        </div>
+    </body>
+
+</html>

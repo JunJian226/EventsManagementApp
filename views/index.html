@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="auto">
+    <head>
+        <title>Event Management App</title>
+        <link href="/bootstrap.min.css" rel="stylesheet" />
+
+    </head>
+
+    <body>
+        <main>
+            <img src="/appBanner.jpg" style="width: 100%;">
+            </br></br>
+            <div style="height:0;width:100%;padding-bottom:10%;padding-left:8%">
+                <div class="container">
+                    <div class="row">
+                    <!-- Card 1 -->
+                        <div class="col-md-2">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h1 class="card-title text-center"><%= events.length %></h1>
+                                    <p class="card-text text-center" style="color: #333">Events</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h1 class="card-title text-center"><%= categories.length %></h1>
+                                    <p class="card-text text-center" style="color: #333">Categories</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h1 class="card-title text-center"><%= operation.add %></h1>
+                                    <p class="card-text text-center" style="color: #333">Records Added</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h1 class="card-title text-center"><%= operation.delete %></h1>
+                                    <p class="card-text text-center" style="color: #333">Records Deleted</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h1 class="card-title text-center"><%= operation.update %></h1>
+                                    <p class="card-text text-center" style="color: #333">Record Updates</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </br></br>
+            
+            <p class="h4 text-center">Tasks Group 1 (Woo Jun Jian)</p>
+            <!-- Custom positioned container with the buttons-->
+            <div style="height:0;width:100%;padding-bottom:10%;padding-left:23%">
+				<div class="container">
+					<a type="button" class="btn btn-primary" href="/category/33469660/add">Add Category</a>
+					<a type="button" class="btn btn-primary" href="/category/33469660/view-categories">List all categories</a>
+                    <a type="button" class="btn btn-primary" href="/category/33469660/search-category?keyword="">List categories by keyword</a>
+                    <a type="button" class="btn btn-primary" href="/event/33469660/<%= events[0] ? events[0].eventId : `no-events-added` %>">Show Event Details</a>
+                    <a type="button" class="btn btn-primary" href="/category/33469660/delete-category">Delete Category By ID</a>
+                </div>
+            </div>
+            <p class="h4 text-center">Tasks Group 2 (Gunnraj Dhaliwal)</p>
+            <!-- Custom positioned container with the buttons-->
+            <div style="height:0;width:80%;padding-bottom:6%;padding-left:23%">
+				<div class="container">
+					<a type="button" class="btn btn-primary" href="/event/Gunnraj/add-event">Add New Event</a>
+					<a type="button" class="btn btn-primary" href="/event/Gunnraj/events">View all Events</a>
+                    <a type="button" class="btn btn-primary" href="/event/Gunnraj/sold-out-events">View All Sold Out Events</a>
+                    <!-- This button will send the user to the route that shows the category details of the first cetegory in the database -->
+                    <a type="button" class="btn btn-primary" href="/category/Gunnraj/category-details/<%= categories[0] ? categories[0].id : `no-categories-added` %>">Show Category Details</a>
+                    <a type="button" class="btn btn-primary" href="/event/Gunnraj/delete-event">Delete an Event By ID</a>
+                </div>
+            </div>
+        </main>
+        <img src="/companyBanner.jpg" style="width: 100%;">
+    </body>
+</html>

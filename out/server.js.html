@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: server.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: server.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/** 
+ * @author Jun Jian &lt;jwoo0046@student.monash.edu>
+ * @author Gunnraj Dhaliwal &lt;ghda0007@student.monash.edu>
+ */
+
+/**
+ * @requires express
+ * @requires mongoose
+ * @requires models/event-category
+ * @requires models/event
+ * @requires models/operation
+ * @requires controller/stats
+ * @requires routes/category-api
+ * @requires routes/event-category
+ * @requires routes/event-api
+ * @requires routes/event
+ */
+
+/**
+ * Mongoose module
+ * @constant
+ */
+const mongoose = require("mongoose");
+
+/** 
+ * Express module 
+ * @constant
+*/
+const express = require("express");
+
+/**  
+ * Category Model module
+ * @constant
+ */
+const { Category } = require("./models/event-category")
+
+
+/**
+ * Event Model module
+ * @constant
+ */
+const { Event } = require("./models/event");
+
+/**
+ * Operation Model Module
+ * @constant
+ */
+const { Operation } = require("./models/operation")
+
+/**  
+ * Operation collection managing module 
+ * @constant
+ */
+const { initialiseOperation } = require("./controller/stats")
+
+/**
+ * Category API router
+ * @constant
+ */
+const categoryAPI = require("./routes/category-api");
+
+/**
+ * Category HTML router
+ * @constant
+ */
+const categoryRouter = require("./routes/event-category")
+
+/**
+ * Event API router
+ * @constant
+ */
+const eventAPI = require("./routes/event-api")
+
+/**
+ * Event HTML router
+ * @constant
+ */
+const eventRouter = require("./routes/event");
+
+/**
+ * App instance
+ * @constant
+ */
+const app = express();
+
+/**
+ * Configure port number
+ */
+app.listen(8080);
+
+/**
+ * Configure express to use middleware that parses json requests
+ */
+app.use(express.json());
+
+/**
+ * Configure parsing URL-encoded data from request bodies 
+ * @name Encoded Data Parser
+ * @function
+ * @param {Object} options - configuration options for URL-encoded data parser 
+ */
+app.use(express.urlencoded({ extended: false }));
+
+/**
+ * The url for connecting to the mongoDB server
+ * @constant
+ */
+const url = "mongodb://127.0.0.1:27017/category-app";
+
+/**
+ * A function that connects to the mongoDB server
+ * @function
+ * @param {string} url The url to connect to the mongoDB server
+ * @returns A string denoting the successful connection to the mongoDB server
+ */
+async function connect(url) {
+	await mongoose.connect(url);
+    await initialiseOperation()
+	return "Connected Successfully";
+}
+
+/**
+ * Using the category API router for "/api/v1/category" paths
+ * @name CategoryAPI Router 
+ * @function
+ * @param {string} path - URL path where the categoryAPI router will be mounted.
+ * @param {ExpressRouter} router - the Express router to be mounted.
+ */
+app.use("/api/v1/category", categoryAPI);
+
+/**
+ * Using the category router for "/category" paths
+ * @name Category Router 
+ * @function
+ * @param {string} path - URL path where the category router will be mounted.
+ * @param {ExpressRouter} router - the Express router to be mounted.
+ */
+app.use("/category", categoryRouter);
+
+/**
+ * Using the event api router for "/api/v1/event" paths
+ * @name EventAPI Router 
+ * @function
+ * @param {string} path - URL path where the eventAPI router will be mounted.
+ * @param {ExpressRouter} router - the Express router to be mounted.
+ */
+app.use("/api/v1/event", eventAPI);
+
+/**
+ * Using the event router for "/event" paths
+ * @name Event Router 
+ * @function
+ * @param {string} path - URL path where the event router will be mounted.
+ * @param {ExpressRouter} router - the Express router to be mounted.
+ */
+app.use("/event", eventRouter);
+
+/**
+ * Set the view engine for rendering HTML templates
+ * @name Set View Engine
+ * @function
+ * @param {string} engine - the name of the view engine to be set
+ * @param {string} extension - file extension for templates associated with view engine
+ */
+app.set("view engine", "html");
+
+/**  
+ * Set up the EJS view engine for rendering HTML files
+ * @name EJS View Engine
+ * @function
+ * @param {string} extension - the file extension for templates to rendered with EJS
+ * @param {function} renderFunction - function responsible for rendering EJS templates 
+*/
+app.engine("html",require("ejs").renderFile);
+
+/**
+ * Serve static image files from the "images" directory
+ * @name Static Images
+ * @function
+ * @param {string} directoryPath - The local directory path where the static image files are located.
+ */
+app.use(express.static("images"))
+
+/**
+ * Serve static files from the "node_modules/bootstrap/dist/css" directory
+ * @name Static Bootstrap CSS
+ * @function
+ * @param {string} directoryPath - The local directory path where the static files are located.
+ */
+app.use(express.static("node_modules/bootstrap/dist/css"));
+
+/** 
+ * Route serving the homepage index.html
+ * @name GET/ index page
+ * @function
+ * @param {string} path - Express path
+ * @param {function} callback - Express callback
+ */
+app.get("/", async function(req,res){
+    /**
+     * The list of categories in the database
+     * @type {Array}
+     */
+    let categoryList = await Category.find()
+
+    /**
+     * The list of events in the database
+     * @type {Array}
+     */
+    let eventsList = await Event.find();
+
+    /**
+     * The operations object to visualise the number of operations performed on the database
+     * @type {Operation}
+     */
+    let operationList = await Operation.findOne()
+    
+    res.render("index.html", {events: eventsList, categories: categoryList, operation: operationList})
+});
+
+/** 
+ * Middleware for handling 404 errors by sending a 404 html page.
+ * @name Handle 404 Errors
+ * @function
+ * @param {Object} req - the Express request object
+ * @param {Object} res - the Express response object
+ */
+app.use((req, res) => {
+    res.render(__dirname + "/views/error.html", {message: "Error 404: Page Not Found!"});
+  });
+
+connect(url)
+	.then(console.log)
+	.catch((err) => console.log(err));</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#Category">Category</a></li><li><a href="global.html#CategoryRouter">Category Router</a></li><li><a href="global.html#CategoryAPIRouter">CategoryAPI Router</a></li><li><a href="global.html#DELETE/DeleteCategory">DELETE/ Delete Category</a></li><li><a href="global.html#EJSViewEngine">EJS View Engine</a></li><li><a href="global.html#EncodedDataParser">Encoded Data Parser</a></li><li><a href="global.html#Event">Event</a></li><li><a href="global.html#EventRouter">Event Router</a></li><li><a href="global.html#EventAPIRouter">EventAPI Router</a></li><li><a href="global.html#GET/AddingCategory">GET/ Adding Category</a></li><li><a href="global.html#GET/AddingEvent">GET/ Adding Event</a></li><li><a href="global.html#GET/Categorydetails">GET/ Category details</a></li><li><a href="global.html#GET/DeletingEvent">GET/ Deleting Event</a></li><li><a href="global.html#GET/Eventdetails">GET/ Event details</a></li><li><a href="global.html#GET/ListCategories">GET/ List Categories</a></li><li><a href="global.html#GET/ListEvents">GET/ List Events</a></li><li><a href="global.html#GET/Showsoldoutevents">GET/ Show sold out events</a></li><li><a href="global.html#GET/ShowingEvents">GET/ Showing Events</a></li><li><a href="global.html#GET/View-Categories">GET/ View-Categories</a></li><li><a href="global.html#GET/delete-category">GET/ delete-category</a></li><li><a href="global.html#GET/indexpage">GET/ index page</a></li><li><a href="global.html#GET/search-category">GET/ search-category</a></li><li><a href="global.html#Handle404Errors">Handle 404 Errors</a></li><li><a href="global.html#Operation">Operation</a></li><li><a href="global.html#POST/AddingCategory">POST/ Adding Category</a></li><li><a href="global.html#POST/AddingEvent">POST/ Adding Event</a></li><li><a href="global.html#POST/Adding-Category">POST/ Adding-Category</a></li><li><a href="global.html#POST/delete-category">POST/ delete-category</a></li><li><a href="global.html#POST/search-category">POST/ search-category</a></li><li><a href="global.html#PUT/UpdatingCategory">PUT/ Updating Category</a></li><li><a href="global.html#PUT/UpdatingEvent">PUT/ Updating Event</a></li><li><a href="global.html#SetViewEngine">Set View Engine</a></li><li><a href="global.html#StaticBootstrapCSS">Static Bootstrap CSS</a></li><li><a href="global.html#StaticImages">Static Images</a></li><li><a href="global.html#VIEWS_PATH">VIEWS_PATH</a></li><li><a href="global.html#app">app</a></li><li><a href="global.html#categoryAPI">categoryAPI</a></li><li><a href="global.html#categoryRouter">categoryRouter</a></li><li><a href="global.html#categorySchema">categorySchema</a></li><li><a href="global.html#connect">connect</a></li><li><a href="global.html#createNewEvent">createNewEvent</a></li><li><a href="global.html#eventAPI">eventAPI</a></li><li><a href="global.html#eventRouter">eventRouter</a></li><li><a href="global.html#eventSchema">eventSchema</a></li><li><a href="global.html#express">express</a></li><li><a href="global.html#formatDuration">formatDuration</a></li><li><a href="global.html#generateID">generateID</a></li><li><a href="global.html#generateRandomAlphabeticString">generateRandomAlphabeticString</a></li><li><a href="global.html#generateRandomNumbers">generateRandomNumbers</a></li><li><a href="global.html#initialiseOperation">initialiseOperation</a></li><li><a href="global.html#mongoose">mongoose</a></li><li><a href="global.html#operationSchema">operationSchema</a></li><li><a href="global.html#path">path</a></li><li><a href="global.html#router">router</a></li><li><a href="global.html#updateOperation">updateOperation</a></li><li><a href="global.html#url">url</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Fri Sep 15 2023 23:24:32 GMT+1000 (Australian Eastern Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

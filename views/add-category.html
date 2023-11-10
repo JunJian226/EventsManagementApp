@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="auto">
+    <head>
+        <title>Add Category</title>
+        <link href="/bootstrap.min.css" rel="stylesheet" />
+    </head>
+
+    <body>
+        <img src="/appBanner.jpg" style="width: 100%;">
+        <main>
+            </br>
+            <p class="h1 text-center">Add Category </p>
+            <p class="h5 text-muted text-center ">Fill in category details & click submit</p>
+            </br></br></br>
+            <!-- container of a form with custom layout and positioning-->
+            <div class="row row-cols-1 row-cols-sm-2 g-3 bg-light">
+                <div class="mx-auto">
+                    <div class="col">
+                    </br>
+                        <div class="card shadow-sm ">
+                            <div class="card-body">
+                                <!-- HTML form to create a category -->
+                                <form action="/category/33469660/add-post" method="POST">
+                                    <div class="mb-3">
+                                        <label for="name" class="form-label">Category Name</label>
+                                        <input type="text" name="name" class="form-control" id="name" placeholder="Enter category name" pattern="([a-zA-Z0-9]+[ ]*)+$" title = "Name can only contain alphanumeric values. Name cannot start with space. Name must have atleast one alphanumeric value." required/>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="description" class="form-label">Description</label>
+                                        <textarea class="form-control" name="description" aria-label="With textarea" id="description" placeholder="(optional)"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="image" class="form-label">Image</label>
+                                        <input type="text" name="image" class="form-control" id="image" placeholder="Enter static resource path (optional)" />
+                                    </div>
+                                    <button class="btn btn-primary">Submit</button>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- Newline spacing to beautify the html page -->
+                    </br></br></br></br>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!-- Container of redirecting buttons with custom layout and positoning -->
+        <div style="height:0;width:80%;padding-bottom:20%;padding-left:11.5%">
+            <div class="container">
+                <a type="button" class="btn btn-primary" href="/">Back to Homepage</a>
+                <a type="button" class="btn btn-primary" href="/category/33469660/view-categories">Go to View Category</a> 
+            </div>
+        </div>
+    </body>
+</html>

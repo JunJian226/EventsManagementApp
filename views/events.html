@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="auto">
+    <head>
+        <title>Events List</title>
+        <link href="/bootstrap.min.css" rel="stylesheet" />
+    </head>
+    <body>
+        <img src="/appBanner.jpg" style="width: 100%;">
+        <main>
+            <br>
+            <p class="h1 text-center">Current Events</p>
+            <br>
+            <br>
+            <br>
+            <div class="album py-5 bg-light">
+                <div class="container">
+                    <div class="row row-cols-1 g-3">
+                        <div class="mx-auto">
+                            <div class="col">
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">Id</th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Start Time</th>
+                                        <th scope="col">End Time</th>
+                                        <th scope="col">Duration</th>
+                                        <th scope="col">Category Id</th>
+                                        <th scope="col">Description</th>
+                                        <th scope="col">Is Active</th>
+                                        <th scope="col">Capacity</th>
+                                        <th scope="col">Tickets Available</th>
+                                        <th scope="col">Action</th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <% for (let i = 0;i<events.length;i++){ %>
+                                        <tr>
+                                            <th scope="row"><%= events[i].eventId %></th>
+                                            <td><%= events[i].name %></td>
+                                            <td><%= events[i].startDateTime.toLocaleDateString() +", " + events[i].startDateTime.toLocaleTimeString()  %></td>
+                                            <!-- creating endDate variable because it is not stored in event -->
+                                            <% let endDate = new Date(events[i].startDateTime.getTime() + events[i].durationInMinutes * 60000) %>
+                                            <td><%= endDate.toLocaleDateString() + ", " + endDate.toLocaleTimeString() %></td>
+                                            <td><%= formatDuration(events[i].durationInMinutes) %></td>
+                                            <% let categoryIds = events[i].categoryList.map((category) => category.id).toString(); %>
+                                            <td><%= categoryIds %></td>
+                                            <td><%= events[i].description %></td>
+                                            <!-- This will produce a checked or unchecked tickbox depending on whether the event is active -->
+                                            <td><input type="checkbox" disabled="disabled" <%= events[i].isActive ? "checked" : "" %>></td>
+                                            <td><%= events[i].capacity %></td>
+                                            <td><%= events[i].ticketsAvailable %></td>
+                                            <td><a type="button" class="btn btn-primary" href="/event/33469660/<%=events[i].eventId%>">View</a></td>
+                                        </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            <div>
+                        </div>
+                    </div>
+                </div>
+            </div>                      
+        </main>
+        <!-- Container of redirecting buttons with custom layout and positoning -->
+        <div style="height:0;width:80%;padding-top:1%;padding-bottom:20%;padding-left:11.5%">
+            <div class="container">
+                <a type="button" class="btn btn-primary" href="/">Back to Homepage</a>
+                <a type="button" class="btn btn-primary" href="/event/Gunnraj/sold-out-events">Go to View Sold-Out Events</a> 
+            </div>
+        </div>
+    </body>
+</html>

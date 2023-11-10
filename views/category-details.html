@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="auto">
+    <head>
+        <title>Category Details</title>
+        <link href="/bootstrap.min.css" rel="stylesheet" />
+    </head>
+    <body>
+        <img src="/appBanner.jpg" style="width: 100%;">
+        <main>
+            <br>
+            <!-- If the category has no image path in its attributes, then no image will be shown -->
+            <% if (category.image !== undefined && category.image !== "") { %>
+            <img src=<%= category.image %> style="width: 100%;">
+            <% } %>
+            <div class="album py-5">
+                <div class="container">
+                    <p class="h1 text-center"> <%= category.name %></p>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <b>Category Id</b>
+                                    <br>
+                                    <%= category.id %>
+                                    <br>
+                                    <b>Category Description</b>
+                                    <br>
+                                    <%= category.description %>
+                                    <br>
+                                    <b>Category Creation Date</b>
+                                    <br>
+                                    <%= category.createdAt %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="album py-5 bg-light">
+                <div class="container">
+                    <div class="row row-cols-1 g-3">
+                        <div class="mx-auto">
+                            <div class="col">
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">Id</th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Start Time</th>
+                                        <th scope="col">End Time</th>
+                                        <th scope="col">Duration</th>
+                                        <th scope="col">Category Id</th>
+                                        <th scope="col">Description</th>
+                                        <th scope="col">Is Active</th>
+                                        <th scope="col">Capacity</th>
+                                        <th scope="col">Tickets Available</th>
+                                        <th scope="col">Action</th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <!-- Filtering for events that have the same category Id as the category above -->
+                                        <% events.forEach((event) => { %>
+                                        <tr>
+                                            <th scope="row"><%= event.eventId %></th>
+                                            <td><%= event.name %></td>
+                                            <td><%= event.startDateTime.toLocaleDateString() +", " + event.startDateTime.toLocaleTimeString()  %></td>
+                                            <!-- creating endDate variable because it is not stored in event -->
+                                            <% let endDate = new Date(event.startDateTime.getTime() + event.durationInMinutes * 60000) %>
+                                            <td><%= endDate.toLocaleDateString() +", " + endDate.toLocaleTimeString()  %></td>
+                                            <td><%= formatDuration(event.durationInMinutes) %></td>
+                                            <% let categoryIds = event.categoryList.map((category) => category.id).toString(); %>
+                                            <td><%= categoryIds %></td>
+                                            <td><%= event.description %></td>
+                                            <!-- This will produce a checked or unchecked tickbox depending on whether the event is active -->
+                                            <td><input type="checkbox" disabled="disabled" <%= event.isActive ? "checked" : "" %>></td>
+                                            <td><%= event.capacity %></td>
+                                            <td><%= event.ticketsAvailable %></td>
+                                            <td><a type="button" class="btn btn-primary" href="/event/33469660/<%=event.eventId%>">View</a></td>
+                                        </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+                            <div>
+                        </div>
+                    </div>
+                </div>
+            </div>                     
+        </main>
+        <!-- Container of redirecting buttons with custom layout and positoning -->
+        <div style="height:0;width:80%;padding-top:1%;padding-bottom:20%;padding-left:11.5%">
+            <div class="container">
+                <a type="button" class="btn btn-primary" href="/">Back to Homepage</a>
+                <a type="button" class="btn btn-primary" href="/category/33469660/view-categories">Go to View Category</a> 
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: models/event.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: models/event.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @author Gunnraj Dhaliwal &lt;gdha0007@student.monash.edu>
+ */
+
+/**
+ * Mongoose for Event Schema and Model 
+ * @requires mongoose 
+ */
+
+/**
+ * Mongoose module
+ * @constant
+ */
+const mongoose = require('mongoose');
+
+/**
+ * Schema for Event
+ * @constant eventSchema
+ */
+const eventSchema = mongoose.Schema({
+    eventId: {
+        type: String,
+    },
+    name: {
+        type: String,
+        required: true
+    },
+    description: {
+        type: String
+    },
+    startDateTime: {
+        type: Date
+    },
+    durationInMinutes: {
+        type: Number,
+        required: true
+    },
+    isActive: {
+        type: Boolean,
+        default: false
+    },
+    image: {
+        type: String,
+        default: '/party.jpeg'
+    },
+    capacity: {
+        type: Number,
+        required: true,
+        default: 100,
+        validate: {
+            validator: function (value) {
+                /**
+                 * ensure that the capacity is betwen 10 and 2000 inclusive
+                 */
+                return 10 &lt;= value &amp;&amp; value &lt;= 2000;
+            }
+        }
+    },
+    ticketsAvailable: {
+        type: Number,
+        required: true
+    },
+    categoryList: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category"
+    }]
+})
+
+function generateId() {
+    return 'E' + generateRandomAlphabeticString(2) + '-' + generateRandomNumbers(4)
+}
+
+/**
+ * A function to create a random alphabetic string of a specified length
+ * @param {int} returnStringLength The length of the random string to be returned
+ * @returns a random string of length "returnStringLength"
+ */
+function generateRandomAlphabeticString(returnStringLength) {
+    /**
+     * The string of random letters that will be returned
+     * @type {string}
+     */
+    let results = '';
+    
+    /**
+     * A string containing every letter, so that random letters can be generated from it
+     * @constant
+     * @type {string}
+     */
+    const CHARACTERS = 'abcdefghijklmnopqrstuvwxyz';
+
+    /**
+     * The length of the string of every unique letter that the result will be generated from
+     * @type {number}
+     */
+    let charLength = CHARACTERS.length;
+
+    for (let i = 0; i &lt; returnStringLength; i++) {
+        results += CHARACTERS.charAt(Math.floor(Math.random() * charLength));
+    }
+
+    return results.toUpperCase();
+}
+
+/**
+ * A function that generates a random number of a specified length
+ * @param {int} length the number of digits or 'length'' of the random number
+ * @returns a random number of a specified length
+ */
+function generateRandomNumbers(length) {
+    /**
+     * The length of the random number that will be returned
+     * @type {number}
+     */
+    let numOfDigits = 10 ** (length - 1);
+
+    /**
+     * The random number of the specified length that will be returned
+     */
+    let result = Math.floor(numOfDigits + Math.random() * numOfDigits * 9);
+    
+    return result;
+}
+
+/**
+ * Model for Event document vased upon its schema
+ * @const Event
+ */
+const Event = mongoose.model('Event', eventSchema);
+
+module.exports = {
+    generateId,
+    Event
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#Category">Category</a></li><li><a href="global.html#CategoryRouter">Category Router</a></li><li><a href="global.html#CategoryAPIRouter">CategoryAPI Router</a></li><li><a href="global.html#DELETE/DeleteCategory">DELETE/ Delete Category</a></li><li><a href="global.html#EJSViewEngine">EJS View Engine</a></li><li><a href="global.html#EncodedDataParser">Encoded Data Parser</a></li><li><a href="global.html#Event">Event</a></li><li><a href="global.html#EventRouter">Event Router</a></li><li><a href="global.html#EventAPIRouter">EventAPI Router</a></li><li><a href="global.html#GET/AddingCategory">GET/ Adding Category</a></li><li><a href="global.html#GET/AddingEvent">GET/ Adding Event</a></li><li><a href="global.html#GET/Categorydetails">GET/ Category details</a></li><li><a href="global.html#GET/DeletingEvent">GET/ Deleting Event</a></li><li><a href="global.html#GET/Eventdetails">GET/ Event details</a></li><li><a href="global.html#GET/ListCategories">GET/ List Categories</a></li><li><a href="global.html#GET/ListEvents">GET/ List Events</a></li><li><a href="global.html#GET/Showsoldoutevents">GET/ Show sold out events</a></li><li><a href="global.html#GET/ShowingEvents">GET/ Showing Events</a></li><li><a href="global.html#GET/View-Categories">GET/ View-Categories</a></li><li><a href="global.html#GET/delete-category">GET/ delete-category</a></li><li><a href="global.html#GET/indexpage">GET/ index page</a></li><li><a href="global.html#GET/search-category">GET/ search-category</a></li><li><a href="global.html#Handle404Errors">Handle 404 Errors</a></li><li><a href="global.html#Operation">Operation</a></li><li><a href="global.html#POST/AddingCategory">POST/ Adding Category</a></li><li><a href="global.html#POST/AddingEvent">POST/ Adding Event</a></li><li><a href="global.html#POST/Adding-Category">POST/ Adding-Category</a></li><li><a href="global.html#POST/delete-category">POST/ delete-category</a></li><li><a href="global.html#POST/search-category">POST/ search-category</a></li><li><a href="global.html#PUT/UpdatingCategory">PUT/ Updating Category</a></li><li><a href="global.html#PUT/UpdatingEvent">PUT/ Updating Event</a></li><li><a href="global.html#SetViewEngine">Set View Engine</a></li><li><a href="global.html#StaticBootstrapCSS">Static Bootstrap CSS</a></li><li><a href="global.html#StaticImages">Static Images</a></li><li><a href="global.html#VIEWS_PATH">VIEWS_PATH</a></li><li><a href="global.html#app">app</a></li><li><a href="global.html#categoryAPI">categoryAPI</a></li><li><a href="global.html#categoryRouter">categoryRouter</a></li><li><a href="global.html#categorySchema">categorySchema</a></li><li><a href="global.html#connect">connect</a></li><li><a href="global.html#createNewEvent">createNewEvent</a></li><li><a href="global.html#eventAPI">eventAPI</a></li><li><a href="global.html#eventRouter">eventRouter</a></li><li><a href="global.html#eventSchema">eventSchema</a></li><li><a href="global.html#express">express</a></li><li><a href="global.html#formatDuration">formatDuration</a></li><li><a href="global.html#generateID">generateID</a></li><li><a href="global.html#generateRandomAlphabeticString">generateRandomAlphabeticString</a></li><li><a href="global.html#generateRandomNumbers">generateRandomNumbers</a></li><li><a href="global.html#initialiseOperation">initialiseOperation</a></li><li><a href="global.html#mongoose">mongoose</a></li><li><a href="global.html#operationSchema">operationSchema</a></li><li><a href="global.html#path">path</a></li><li><a href="global.html#router">router</a></li><li><a href="global.html#updateOperation">updateOperation</a></li><li><a href="global.html#url">url</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Fri Sep 15 2023 23:24:32 GMT+1000 (Australian Eastern Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="auto">
+    <head>
+        <title>No <%= eventOrCategory %></title>
+        <link href="/bootstrap.min.css" rel="stylesheet" />
+    </head>
+    <body>
+        <img src="/appBanner.jpg" style="width: 100%;">
+        <main>
+            <br>
+            <br>
+            <p class="h1 text-center">No <%= eventOrCategory %> Added Yet</p>
+            <p class="h4 text-center text-muted">Add a new <%= eventOrCategory %> then check this page again!</p>
+            <div style="height:0;width:80%; padding-top:4%; padding-bottom:6%; padding-left:40%">
+				<div class="container">
+                    <a type="button" class="btn btn-primary" href="/">Back to Homepage</a>
+                    <% if (eventOrCategory == "Category"){ %>
+                        <a type="button" class="btn btn-primary" href="/category/33469660/add">Add Category</a>
+                    <% } else if (eventOrCategory == "Event"){ %>
+                        <a type="button" class="btn btn-primary" href="/event/Gunnraj/add-event">Add New Event</a>
+                    <% } %>
+                </div>
+            </div>
+            
+        </main>
+        <img src="/companyBanner.jpg" style="width: 100%;">
+    </body>
+</html>

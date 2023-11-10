@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: routes/event.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: routes/event.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @author Gunnraj Dhaliwal &lt;ghda0007@student.monash.edu>
+ */
+
+/**
+ * @requires express
+ * @requires models/event
+ * @requires models/helper-functions
+ * @requires models/event-category
+ * @requires controller/stats
+ */
+
+/**
+ * Express module
+ * @constant
+ */
+const express = require('express');
+
+/**
+ * Event class module
+ * @constant
+ */
+const { Event } = require('../models/event');
+
+/**
+ * Destructering functions from helper-functions module
+ * @constant
+ */
+const { formatDuration, createNewEvent } = require('../models/helper-functions')
+
+/**  
+ * Operation collection managing module 
+ * @constant
+ */
+const { updateOperation } = require("../controller/stats");
+
+/**
+ * router instance
+ * @constant
+ */
+const router = express.Router();
+
+/**
+ * Route serving the add event functionality
+ * @name GET/ Adding Event
+ * @function
+ * @param {Function} callback Express callback function 
+ */
+router.get('/Gunnraj/add-event', function (req, res) {
+    res.render("add-event.html");
+});
+
+
+/**
+ * Route serving the add event to database
+ * @name POST/ Adding Event
+ * @function
+ * @param {string} req.body.name The name of the event
+ * @param {DateTime} req.body.startDate The start date of the event
+ * @param {number} req.body.duration The duration of the event
+ * @param {string} req.body.categoryId The category Id of the event
+ * @param {string} req.body.description The description of the event
+ * @param {string} req.body.isActive Whether the event is active
+ * @param {string} req.body.imagePath The path to the image for the event
+ * @param {number} req.body.capacity The capacity of the event
+ * @param {string} req.body.ticketsAvailable The number of tickets available for the event
+ * @param {Function} callback Express callback function 
+ */
+router.post('/Gunnraj/add-event', async function (req, res) {
+    await createNewEvent(req);
+
+    res.redirect('/event/Gunnraj/events');
+});
+
+
+/**
+ * Route serving the show events functionality
+ * @name GET/ Showing Events
+ * @function
+ * @param {Function} callback Express callback function 
+ */
+router.get('/Gunnraj/events', async function (req, res) {
+    /**
+     * An array of of event objects from the database
+     * @type {Array}
+     */
+    let events = await Event.find().populate("categoryList");
+
+    res.render('events', {title: "All Events", events: events, formatDuration: formatDuration});
+});
+
+
+/**
+ * Route serving the show sold out event functionality
+ * @name GET/ Show sold out events
+ * @function
+ * @param {Function} callback Express callback function 
+ */
+router.get('/Gunnraj/sold-out-events', async function (req, res) {
+    /**
+     * An array of of event objects from the database that have 0 tickets available
+     * @type {Array}
+     */
+    let events = await Event.find({ticketsAvailable: 0}).populate("categoryList");
+    res.render('events', {title: "Sold Out Events", events: events, formatDuration: formatDuration});
+});
+
+/**
+ * Route serving the delete event functionality
+ * @name GET/ Deleting Event
+ * @function
+ * @param {Function} callback Express callback function 
+ */
+router.get('/Gunnraj/delete-event', async function (req, res) {
+    /**
+     * Event Id that will be deleted
+     * @type String
+     */
+    let eventId = req.query.eventId;
+
+    /**
+     * The deleted event. Is null if there was no event or is the deleted event
+     * @type {Event}
+     */
+    let result = await Event.findOneAndDelete({"eventId": eventId});
+
+    await updateOperation("delete");
+
+    if (result !== null) {
+        res.redirect('/event/Gunnraj/events');
+    }
+    else {
+        res.render('delete-event', {eventId: eventId});
+    }
+});
+
+/** 
+ * Router for showing the details of the event
+ * @name GET/ Event details
+ * @function
+ * @param {string} req.params.eventID - The ID of the event to show details of
+ * @param {string} path - Express path
+ * @param {Function} callback - Express callback
+ */
+router.get('/33469660/:eventID', async function (req,res) {
+    /**
+     * The event specified by the request parameters
+     * @type {Event}
+     */
+    let theEvent = await Event.findOne({"eventId": req.params.eventID});
+
+    if (!theEvent){
+        res.render("no-category-event", {eventOrCategory: "Event"});
+        return;
+    }
+
+    /**
+     * The finalDateTime calculated from duration and StartDateTime
+     * @type {Date} 
+     */
+    let finalDate = new Date(theEvent.startDateTime.getTime());
+
+    finalDate.setMinutes(finalDate.getMinutes() + theEvent.durationInMinutes)
+
+    /**
+     * An array of category database Ids
+     * @type {Array}
+     */
+    let categoryIdList = (await theEvent.populate('categoryList')).categoryList
+
+    /**
+     * An array of category id strings
+     * @type {Array}
+     */
+    let stringOfCategories = categoryIdList.map((ele) => ele.id).join(", ")
+
+    res.render('event-details.html', {event: theEvent,
+        startTime: theEvent.startDateTime.toLocaleString(),
+        endTime: finalDate.toLocaleString(),
+        duration: formatDuration(theEvent.durationInMinutes), 
+        categoryIds: stringOfCategories })
+});
+
+module.exports = router;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#Category">Category</a></li><li><a href="global.html#CategoryRouter">Category Router</a></li><li><a href="global.html#CategoryAPIRouter">CategoryAPI Router</a></li><li><a href="global.html#DELETE/DeleteCategory">DELETE/ Delete Category</a></li><li><a href="global.html#EJSViewEngine">EJS View Engine</a></li><li><a href="global.html#EncodedDataParser">Encoded Data Parser</a></li><li><a href="global.html#Event">Event</a></li><li><a href="global.html#EventRouter">Event Router</a></li><li><a href="global.html#EventAPIRouter">EventAPI Router</a></li><li><a href="global.html#GET/AddingCategory">GET/ Adding Category</a></li><li><a href="global.html#GET/AddingEvent">GET/ Adding Event</a></li><li><a href="global.html#GET/Categorydetails">GET/ Category details</a></li><li><a href="global.html#GET/DeletingEvent">GET/ Deleting Event</a></li><li><a href="global.html#GET/Eventdetails">GET/ Event details</a></li><li><a href="global.html#GET/ListCategories">GET/ List Categories</a></li><li><a href="global.html#GET/ListEvents">GET/ List Events</a></li><li><a href="global.html#GET/Showsoldoutevents">GET/ Show sold out events</a></li><li><a href="global.html#GET/ShowingEvents">GET/ Showing Events</a></li><li><a href="global.html#GET/View-Categories">GET/ View-Categories</a></li><li><a href="global.html#GET/delete-category">GET/ delete-category</a></li><li><a href="global.html#GET/indexpage">GET/ index page</a></li><li><a href="global.html#GET/search-category">GET/ search-category</a></li><li><a href="global.html#Handle404Errors">Handle 404 Errors</a></li><li><a href="global.html#Operation">Operation</a></li><li><a href="global.html#POST/AddingCategory">POST/ Adding Category</a></li><li><a href="global.html#POST/AddingEvent">POST/ Adding Event</a></li><li><a href="global.html#POST/Adding-Category">POST/ Adding-Category</a></li><li><a href="global.html#POST/delete-category">POST/ delete-category</a></li><li><a href="global.html#POST/search-category">POST/ search-category</a></li><li><a href="global.html#PUT/UpdatingCategory">PUT/ Updating Category</a></li><li><a href="global.html#PUT/UpdatingEvent">PUT/ Updating Event</a></li><li><a href="global.html#SetViewEngine">Set View Engine</a></li><li><a href="global.html#StaticBootstrapCSS">Static Bootstrap CSS</a></li><li><a href="global.html#StaticImages">Static Images</a></li><li><a href="global.html#VIEWS_PATH">VIEWS_PATH</a></li><li><a href="global.html#app">app</a></li><li><a href="global.html#categoryAPI">categoryAPI</a></li><li><a href="global.html#categoryRouter">categoryRouter</a></li><li><a href="global.html#categorySchema">categorySchema</a></li><li><a href="global.html#connect">connect</a></li><li><a href="global.html#createNewEvent">createNewEvent</a></li><li><a href="global.html#eventAPI">eventAPI</a></li><li><a href="global.html#eventRouter">eventRouter</a></li><li><a href="global.html#eventSchema">eventSchema</a></li><li><a href="global.html#express">express</a></li><li><a href="global.html#formatDuration">formatDuration</a></li><li><a href="global.html#generateID">generateID</a></li><li><a href="global.html#generateRandomAlphabeticString">generateRandomAlphabeticString</a></li><li><a href="global.html#generateRandomNumbers">generateRandomNumbers</a></li><li><a href="global.html#initialiseOperation">initialiseOperation</a></li><li><a href="global.html#mongoose">mongoose</a></li><li><a href="global.html#operationSchema">operationSchema</a></li><li><a href="global.html#path">path</a></li><li><a href="global.html#router">router</a></li><li><a href="global.html#updateOperation">updateOperation</a></li><li><a href="global.html#url">url</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Fri Sep 15 2023 23:24:32 GMT+1000 (Australian Eastern Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

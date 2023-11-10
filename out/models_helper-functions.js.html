@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: models/helper-functions.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: models/helper-functions.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @author Gunnraj Dhaliwal &lt;gdha0007@student.monash.edu>
+ */
+
+/**
+ * @requires models/event
+ * @requires controller/stats
+ * @requires models/event-category
+ */
+
+/**  
+ * Category Model module (including utility function for generateID)
+ * @constant
+ */
+const { generateId, Event } = require("./event");
+
+/**  
+ * Operation collection managing module 
+ * @constant
+ */
+const { updateOperation } = require("../controller/stats");
+
+/**
+ * Category model module
+ * @constants
+ */
+const { Category } = require("./event-category")
+
+/**
+ * Formats the duration from minutes to a string of hours and minutes
+ * @function
+ * @param {number} min - duration in minutes
+ * @returns {string} the formatted duration in hours and minutes
+ */
+function formatDuration(min) {
+    /**
+     * Number of hours in the duration
+     * @type {number} 
+     */
+    let hours = Math.floor(min/60);
+
+    /**
+     * Number of remaining minutes in the duration
+     * @type {number}
+     */
+    let minutes = min%60;
+
+    /**
+     * formatted duration string to be returned
+     * @type {string}
+     */
+    let retString = "";
+    if (hours>0){
+        retString += hours + "hour(s) "
+    }
+    if (minutes>0){
+        retString += minutes + "minute(s)"
+    }
+    return retString
+}
+
+/**
+ * An asynchronous function that creates a new event, adding its id to the categories associated with it
+ * @function
+ * @param {string} req.body.name Name in JSON object (from body request)
+ * @param {string} req.body.decription Description in JSON object (from body request)
+ * @param {string} req.body.startDateTime Start date in JSON object (from body request)
+ * @param {string} req.body.durationInMinutes Duration in minutes in JSON object (from body request)
+ * @param {string} req.body.isActive Boolean of activity state in JSON object (from body request)
+ * @param {string} req.body.image Image Path in JSON object (from body request)
+ * @param {string} req.body.capacity Capacity of event in JSON object (from body request)
+ * @param {string} req.body.ticketsAvailable Number of tickets in JSON object (from body request)
+ * @returns {Event} The created event object
+ */
+async function createNewEvent(req) {
+    /**
+     * The capacity of the event
+     * @type {number}
+     */
+    let capacity = !req.body.capacity ? 100 : parseInt(req.body.capacity);
+
+    /**
+     * The number of tickets for the event, will default to capacity not provided, or the capacity if it exceeds capacity
+     * @type {number}
+     */
+    let ticketsAvailable = !req.body.ticketsAvailable ? capacity : parseInt(req.body.ticketsAvailable);
+
+    if (ticketsAvailable > capacity) {
+        ticketsAvailable = capacity;
+    }
+
+    /**
+     * An new event according to the provided data
+     * @type {Event}
+     */
+    let anEvent = new Event({ eventId: generateId(), name: req.body.name, 
+        description: req.body.description, startDateTime: new Date(req.body.startDateTime), 
+        durationInMinutes: parseInt(req.body.durationInMinutes), 
+        isActive: req.body.isActive === true || req.body.isActive === "true" ? true : false, 
+        image: !req.body.image ? undefined : req.body.image, 
+        capacity: capacity, ticketsAvailable: ticketsAvailable});
+
+    await anEvent.save();
+    await updateOperation("add");
+
+    /**
+     * The ids of the categories associated with the event in an array
+     * @type {Array}
+     */
+    let categoryIds = req.body.categories ? req.body.categories.split(',') : undefined;
+
+    /**
+     * An array of category documents that have the matching Ids provided
+     * @type {Array}
+     */
+    let categories = await Category.find({ "id": categoryIds})
+
+    /**
+     * An array to be populated with the mongo Ids of the associated categories
+     * @type {Array}
+     */
+    let databaseIdList = [];
+    
+    /**
+     * Pushing the event mongo Id into the categories, whilst also saving the category mongo Ids
+     */
+    for (const category of categories) {
+        category.eventsList.push(anEvent._id);
+        await category.save();
+        databaseIdList.push(category._id);
+    }
+
+    anEvent.categoryList.push(...databaseIdList);
+    await anEvent.save();
+
+    return anEvent;
+}
+
+module.exports = { formatDuration, createNewEvent };
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#Category">Category</a></li><li><a href="global.html#CategoryRouter">Category Router</a></li><li><a href="global.html#CategoryAPIRouter">CategoryAPI Router</a></li><li><a href="global.html#DELETE/DeleteCategory">DELETE/ Delete Category</a></li><li><a href="global.html#EJSViewEngine">EJS View Engine</a></li><li><a href="global.html#EncodedDataParser">Encoded Data Parser</a></li><li><a href="global.html#Event">Event</a></li><li><a href="global.html#EventRouter">Event Router</a></li><li><a href="global.html#EventAPIRouter">EventAPI Router</a></li><li><a href="global.html#GET/AddingCategory">GET/ Adding Category</a></li><li><a href="global.html#GET/AddingEvent">GET/ Adding Event</a></li><li><a href="global.html#GET/Categorydetails">GET/ Category details</a></li><li><a href="global.html#GET/DeletingEvent">GET/ Deleting Event</a></li><li><a href="global.html#GET/Eventdetails">GET/ Event details</a></li><li><a href="global.html#GET/ListCategories">GET/ List Categories</a></li><li><a href="global.html#GET/ListEvents">GET/ List Events</a></li><li><a href="global.html#GET/Showsoldoutevents">GET/ Show sold out events</a></li><li><a href="global.html#GET/ShowingEvents">GET/ Showing Events</a></li><li><a href="global.html#GET/View-Categories">GET/ View-Categories</a></li><li><a href="global.html#GET/delete-category">GET/ delete-category</a></li><li><a href="global.html#GET/indexpage">GET/ index page</a></li><li><a href="global.html#GET/search-category">GET/ search-category</a></li><li><a href="global.html#Handle404Errors">Handle 404 Errors</a></li><li><a href="global.html#Operation">Operation</a></li><li><a href="global.html#POST/AddingCategory">POST/ Adding Category</a></li><li><a href="global.html#POST/AddingEvent">POST/ Adding Event</a></li><li><a href="global.html#POST/Adding-Category">POST/ Adding-Category</a></li><li><a href="global.html#POST/delete-category">POST/ delete-category</a></li><li><a href="global.html#POST/search-category">POST/ search-category</a></li><li><a href="global.html#PUT/UpdatingCategory">PUT/ Updating Category</a></li><li><a href="global.html#PUT/UpdatingEvent">PUT/ Updating Event</a></li><li><a href="global.html#SetViewEngine">Set View Engine</a></li><li><a href="global.html#StaticBootstrapCSS">Static Bootstrap CSS</a></li><li><a href="global.html#StaticImages">Static Images</a></li><li><a href="global.html#VIEWS_PATH">VIEWS_PATH</a></li><li><a href="global.html#app">app</a></li><li><a href="global.html#categoryAPI">categoryAPI</a></li><li><a href="global.html#categoryRouter">categoryRouter</a></li><li><a href="global.html#categorySchema">categorySchema</a></li><li><a href="global.html#connect">connect</a></li><li><a href="global.html#createNewEvent">createNewEvent</a></li><li><a href="global.html#eventAPI">eventAPI</a></li><li><a href="global.html#eventRouter">eventRouter</a></li><li><a href="global.html#eventSchema">eventSchema</a></li><li><a href="global.html#express">express</a></li><li><a href="global.html#formatDuration">formatDuration</a></li><li><a href="global.html#generateID">generateID</a></li><li><a href="global.html#generateRandomAlphabeticString">generateRandomAlphabeticString</a></li><li><a href="global.html#generateRandomNumbers">generateRandomNumbers</a></li><li><a href="global.html#initialiseOperation">initialiseOperation</a></li><li><a href="global.html#mongoose">mongoose</a></li><li><a href="global.html#operationSchema">operationSchema</a></li><li><a href="global.html#path">path</a></li><li><a href="global.html#router">router</a></li><li><a href="global.html#updateOperation">updateOperation</a></li><li><a href="global.html#url">url</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Fri Sep 15 2023 23:24:32 GMT+1000 (Australian Eastern Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

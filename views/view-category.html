@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en" data-bs-theme="auto">
+    <head>
+        <title>Categories List</title>
+        <link href="/bootstrap.min.css" rel="stylesheet">
+        <style>
+            td{ vertical-align: top;}
+        </style>
+    </head>
+
+    <body>
+        <img src="/appBanner.jpg" style="width: 100%;">
+        </br></br>
+        <!-- Uses the appropriate title for filtering list or just viewing list -->
+        <p class="h1 text-center">
+            <% if (searchKeyWord === undefined) { %>
+            Category List
+            <% } else { %>
+            Filtered Category List: <%= searchKeyWord%>
+            <% } %>
+        </p>
+        </br></br>
+        <!-- container of a form with custom layout and positioning-->
+        <div class="row row-cols-2 row-cols-sm-2 g-3">
+            <div class="mx-auto">
+                <div class="col">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <!-- HTML form to filter the categories list -->
+                            <form action="/category/33469660/search-category" method="POST">
+                                <div class="mb-3">
+                                    <label for="searchKeyWord" class="form-label">Filter List by Description Keyword</label>
+                                    <input type="text" name="searchKeyWord" class="form-control" id="searchKeyWord" placeholder="Enter a keyword to search from description" required/>
+                                </div>
+                                <button class="btn btn-primary">Search</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </br> 
+        <!-- An album with a container of the table of categories -->
+        <div class="album py-5 bg-light">
+            <div class="container">
+                <div class="row row-cols-1 g-3">
+                    <div class="mx-auto">
+                        <div class="col">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Id</th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Description</th>
+                                        <th scope="col">Image</th>
+                                        <th scope="col"></th>
+                                        <th scope="col">Created Date</th>
+                                        <th scope="col">Actions</th>
+                                    </tr>
+                                </thead>
+                        
+                                <tbody>
+                                    <!-- Considers each category in the database -->
+                                    <% for (let i=0; i <records.length; i++){ %>
+                                    <!-- Creates a row of details for that entry if it is not filtering or entry's decription contain search keyword -->
+                                        <% if ((searchKeyWord === undefined)|(records[i].description.toLowerCase().includes(searchKeyWord))) { %>
+                                            <tr>
+                                                <th scope="row"><%= records[i].id %></th>
+                                                <td><%= records[i].name %></td>
+                                                <td><%= records[i].description %></td>
+                                                <td><%= records[i].image %> </td>
+                                                <!-- Shows the image if the imagePath exists -->
+                                                <td><% if (records[i].image != "") { %> <img src="<%= records[i].image%>" height="250"> <% } %></td>
+                                                <td><%= records[i].createdAt.toLocaleString() %></td>
+                                                <!-- Creates a button with the link to category details page -->
+                                                <td><a type="button" class="btn btn-primary" href="/category/Gunnraj/category-details/<%=records[i].id%>">View</a></td>
+                                            </tr>
+                                        <% } %>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Container of redirecting buttons with custom layout and positoning -->
+        <div style="height:0;width:80%;padding-bottom:20%;padding-left:11.5%">
+            <div class="container">
+                <a type="button" class="btn btn-primary" href="/">Back to Homepage</a>
+                <a type="button" class="btn btn-primary" href="/category/33469660/add">Go to Add Category</a>
+                <a type="button" class="btn btn-primary" href="/category/33469660/delete-category">Go to Delete Category</a>
+                <!-- Additional button to return to unfiltered list if it is currently filtering the list -->
+                <% if (searchKeyWord !== undefined) { %>
+                    <a type="button" class="btn btn-primary" href="/category/33469660/view-categories">Go to Unfiltered Category List</a>
+                <% } %>
+            </div>
+        </div>
+    </body>
+</html>

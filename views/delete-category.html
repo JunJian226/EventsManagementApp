@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="auto">
+    <head>
+        <title>Delete Category</title>
+        <link href="/bootstrap.min.css" rel="stylesheet" />
+
+    </head>
+    <body>
+        <img src="/appBanner.jpg" style="width: 100%;">
+        <main>
+            </br>
+            <p class="h1 text-center">Delete Category </p>
+            <p class="h5 text-muted text-center ">Provide category id & click delete</p>
+            </br></br></br>
+            <!-- container of a form with custom layout and positioning-->
+            <div class="row row-cols-2 row-cols-sm-2 g-3 bg-light">
+                <div class="mx-auto">
+                    <div class="col">
+                    </br></br>       
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <!-- HTML form to delete a category -->
+                                <form action="/category/33469660/delete-post" method="POST">
+                                    <div class="mb-3">
+                                        <label for="id" class="form-label">Category ID</label>
+                                        <input type="text" name="id" class="form-control" id="id" placeholder="Enter category id" required/>
+                                    </div>
+                                    <button class="btn btn-primary">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                <!-- Newline spacing to beautify html -->
+                </br></br>
+                    <!-- A table of the names and ID of existing categories -->
+                    <div class="col">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Category Name</th>
+                                    <th scope="col">Category ID</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Adds a row of entries in the table for each category -->
+                                <% for (let i=0; i <records.length; i++){ %>
+                                <tr>
+                                <th scope="row"><%= records[i].name %></th>
+                                <td><%= records[i].id %></td>
+                                </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!-- Container of redirecting buttons with custom layout and positoning -->
+        <div style="height:0;width:80%;padding-bottom:20%;padding-left:11.5%">
+            <div class="container">
+                <a type="button" class="btn btn-primary" href="/">Back to Homepage</a>
+                <a type="button" class="btn btn-primary" href="/category/33469660/view-categories">Go to View Category</a>
+            </div>
+        </div>
+    </body>
+</html>

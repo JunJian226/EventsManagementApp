@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="auto">
+    <head>
+        <title>Add Event</title>
+        <link href="/bootstrap.min.css" rel="stylesheet" />
+    </head>
+    <body>
+        <img src="/appBanner.jpg" style="width: 100%;">
+        <main>
+            <br>
+            <p class="h1 text-center">Add Event</p>
+            <p class="h5 text-muted text-center">Fill in event details and submit</p>
+            <br>
+            <br>
+            <br>
+            <div class="row row-cols-1 row-cols-sm-2 g-3 bg-light">
+                <div class="mx-auto">
+                <div class="col">
+                </br>
+                    <div class="card shadow-sm ">
+                        <div class="card-body">
+                            <!-- HTML form to add a new event -->
+                            <form action="/event/Gunnraj/add-event" method="post">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Event Name</label>
+                                    <input type="text" name="name" class="form-control" id="name" placeholder="Enter event name" required>
+                                <br>
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Event Description</label>
+                                    <input type="text" name="description" class="form-control" id="description" placeholder="Enter description (optional)">
+                                <br>
+                                <div class="mb-3">
+                                    <label for="startDateTime" class="form-label">Event Start Date</label>
+                                    <input type="datetime-local" name="startDateTime" class="form-control" id="startDateTime" placeholder="Enter event date" required>
+                                <br>
+                                <div class="mb-3">
+                                    <label for="durationInMinutes" class="form-label">Event Duration</label>
+                                    <input type="number" name="durationInMinutes" class="form-control" id="durationInMinutes" placeholder="Enter event duration (in minutes)" required>
+                                <br>
+                                <div class="mb-3">
+                                    <label for="categories" class="form-label">Category Id</label>
+                                    <input type="text" name="categories" class="form-control" id="categories" placeholder="Enter category id for event" required>
+                                <br>
+                                <div class="mb-3">
+                                    <label for="isActive" class="form-label">Is Active</label>
+                                    <br>
+                                    <input type="checkbox" name="isActive" value="true" checked>
+                                    <br>
+                                <br>
+                                <div class="mb-3">
+                                    <label for="imagePath" class="form-label">Image Path for Event</label>
+                                    <input type="text" name="imagePath" class="form-control" id="imagePath" placeholder="Enter image path for event (optional)">
+                                <br>
+                                <div class="mb-3">
+                                    <label for="capacity" class="form-label">Event Capacity</label>
+                                    <input type="number" name="capacity" class="form-control" id="capacity" placeholder="Enter event capacity (optional)" min="10" max="2000">
+                                <br>
+                                <div class="mb-3">
+                                    <label for="ticketsAvailable" class="form-label">Tickets Available for Event</label>
+                                    <input type="number" name="ticketsAvailable" class="form-control" id="ticketsAvailable" placeholder="Enter the amount of tickets available (optional)">
+                                <br>
+                                <button type="submit" name="submit">Submit New Event</button>
+                            </form>
+                        </div>
+                    </div>
+                </br></br></br>
+                </div>
+                </div>
+            </div>
+        </br>
+    </main>
+    <!-- Container of redirecting buttons with custom layout and positoning -->
+    <div style="height:0;width:80%;padding-top:1%;padding-bottom:20%;padding-left:24.5%">
+        <div class="container">
+            <a type="button" class="btn btn-primary" href="/">Back to Homepage</a>
+            <a type="button" class="btn btn-primary" href="/event/Gunnraj/events">Go to View Events</a> 
+        </div>
+    </div>
+</body>
+</html>

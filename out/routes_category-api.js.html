@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: routes/category-api.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: routes/category-api.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/** 
+ * @author Jun Jian &lt;jwoo0046@student.monash.edu>
+ */
+
+/** 
+ * Express router providing category-related API routes 
+ * @requires express
+ * @requires models/event-category
+ * @requires models/event
+ * @requires controllers/stats
+ */
+
+/** 
+ * Express module 
+ * @constant
+*/
+const express = require("express");
+
+/**  
+ * Category Model module (including utility function for generateID)
+ * @constant
+ */
+const {generateID, Category} = require("../models/event-category");
+
+/**
+ * Event Model module
+ * @constant
+ */
+const { Event } = require("../models/event")
+
+/**  
+ * Operation collection managing module 
+ * @constant
+ */
+const { updateOperation } = require("../controller/stats")
+
+/** 
+ * Router instance
+ * @constant
+ */
+const router = express.Router();
+
+/** 
+ * Router serving RESTful API version of adding category to mongoDB collection
+ * @name POST/ Adding Category
+ * @function
+ * @param {string} path - Express path
+ * @param {string} req.body.name - Name in JSON object (from body request)
+ * @param {string} req.body.decription - Description in JSON object (from body request)
+ * @param {string} req.body.image - Image Path in JSON object (from body request)
+ * @param {Function} callback - Express callback
+ */
+router.post("/33469660/add", async function(req,res){
+    try{
+        /**
+         * A new category of the category model instantiated from the JSON data from body of HTTP request.
+         * @type {Document}
+         */
+        let newCategory = new Category({
+            id: generateID(),
+            name: req.body.name,
+            description: (req.body.description)?req.body.description:"",
+            image: (req.body.image)?req.body.image:"",  
+            createdAt: new Date()
+        })
+
+        await newCategory.save()
+        await updateOperation("add")
+        res.status(200).json({ "id": newCategory.id })
+    }
+    catch (err){
+        res.status(500).send({
+            message: String(err.message)
+        })
+    }
+})
+
+/**
+ * Router serving RESTful API version of listing all the categories and their linked events in json form.
+ * @name GET/ List Categories
+ * @function
+ * @param {string} path - Express path
+ * @param {Function} callback - Express callback
+ */
+router.get("/33469660/list", async function(req,res){
+    try{
+        /**
+         * An event-populated category list 
+         * @constant
+         */
+        const categories = await Category.find().populate("eventsList");
+        res.status(200).json(categories);
+    } catch (err){
+        res.status(500).send({
+            message: String(err.message)
+        })
+    }
+})
+
+/**
+ * Router serving RESTful API version of deleting a category and all the events listed in its eventList
+ * @name DELETE/ Delete Category
+ * @function
+ * @param {string} path - Express path
+ * @param {string} req.body.categoryId - categoryId inputted in json of request body
+ * @param {Function} callback - Express callback
+ */
+router.delete("/33469660/delete", async function(req,res){
+    try{
+        /** 
+         * A list of objectIDs of events in the to-be-deleted category's events list
+         * @constant
+         */
+        const theCategory = (await Category.findOne({id: req.body.categoryId}))
+        
+        if (theCategory === null){
+            res.status(400).json({
+                "acknowledged": false,
+                "deletedCount": 0
+            })
+            return
+        }
+
+        /**
+         * The extracted array of events ObjectIds
+         * @constant
+         */
+        const eventsList = theCategory.eventsList
+        
+        eventsList.map( async (ele) => await Event.findByIdAndDelete(ele))
+
+        /**
+         * The results of the delete operation (incl acknowledgement and deletedCount)
+         * @type {DeleteResult}
+         */
+        let deleteResult = await Category.deleteOne({id: req.body.categoryId})
+        if (deleteResult.deletedCount >= 1){
+            await updateOperation("delete")
+        }
+        res.status(200).json(deleteResult)
+    } catch(err){
+        res.status(500).send({
+            message: String(err.message)
+        })
+    }
+})
+
+/** 
+ * Router serving RESTful API version of updating a category document
+ * @name PUT/ Updating Category
+ * @function
+ * @param {string} path - Express path
+ * @param {stirng} req.body.categoryId - Id of the category to update
+ * @param {string} req.body.name - Name inputted to update to
+ * @param {string} req.body.description - Description inputted to update to
+ * @param {Function} callback - Express callback
+ */
+router.put("/33469660/update", async function(req,res){
+    try{
+        /**
+         * Mongoose Query object showing the results of update operation
+         * @constant
+         */
+        const returnData = await Category.updateOne({id: req.body.categoryId}, {name: req.body.name, description: req.body.description}, {runValidators: true})
+
+        /**
+         * A string to represent what has occured from the updateOne operation
+         * @type {String}
+         */
+        let message = ""
+
+        if (returnData.acknowledged){
+            if (returnData.matchedCount >= 1){
+                if (returnData.modifiedCount >= 1){ message = "Update is successful" }
+                else { message = "ID is found but no updates were made" }
+                await updateOperation("update")
+            } else { message = "ID not found" }
+        } else { message = "Update is not acknowledged" }
+        
+        res.status(200).json({ "status": message})
+    } catch (err){
+        res.status(500).send({
+            message: String(err.message)
+        })
+    }
+})
+
+module.exports = router;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#Category">Category</a></li><li><a href="global.html#CategoryRouter">Category Router</a></li><li><a href="global.html#CategoryAPIRouter">CategoryAPI Router</a></li><li><a href="global.html#DELETE/DeleteCategory">DELETE/ Delete Category</a></li><li><a href="global.html#EJSViewEngine">EJS View Engine</a></li><li><a href="global.html#EncodedDataParser">Encoded Data Parser</a></li><li><a href="global.html#Event">Event</a></li><li><a href="global.html#EventRouter">Event Router</a></li><li><a href="global.html#EventAPIRouter">EventAPI Router</a></li><li><a href="global.html#GET/AddingCategory">GET/ Adding Category</a></li><li><a href="global.html#GET/AddingEvent">GET/ Adding Event</a></li><li><a href="global.html#GET/Categorydetails">GET/ Category details</a></li><li><a href="global.html#GET/DeletingEvent">GET/ Deleting Event</a></li><li><a href="global.html#GET/Eventdetails">GET/ Event details</a></li><li><a href="global.html#GET/ListCategories">GET/ List Categories</a></li><li><a href="global.html#GET/ListEvents">GET/ List Events</a></li><li><a href="global.html#GET/Showsoldoutevents">GET/ Show sold out events</a></li><li><a href="global.html#GET/ShowingEvents">GET/ Showing Events</a></li><li><a href="global.html#GET/View-Categories">GET/ View-Categories</a></li><li><a href="global.html#GET/delete-category">GET/ delete-category</a></li><li><a href="global.html#GET/indexpage">GET/ index page</a></li><li><a href="global.html#GET/search-category">GET/ search-category</a></li><li><a href="global.html#Handle404Errors">Handle 404 Errors</a></li><li><a href="global.html#Operation">Operation</a></li><li><a href="global.html#POST/AddingCategory">POST/ Adding Category</a></li><li><a href="global.html#POST/AddingEvent">POST/ Adding Event</a></li><li><a href="global.html#POST/Adding-Category">POST/ Adding-Category</a></li><li><a href="global.html#POST/delete-category">POST/ delete-category</a></li><li><a href="global.html#POST/search-category">POST/ search-category</a></li><li><a href="global.html#PUT/UpdatingCategory">PUT/ Updating Category</a></li><li><a href="global.html#PUT/UpdatingEvent">PUT/ Updating Event</a></li><li><a href="global.html#SetViewEngine">Set View Engine</a></li><li><a href="global.html#StaticBootstrapCSS">Static Bootstrap CSS</a></li><li><a href="global.html#StaticImages">Static Images</a></li><li><a href="global.html#VIEWS_PATH">VIEWS_PATH</a></li><li><a href="global.html#app">app</a></li><li><a href="global.html#categoryAPI">categoryAPI</a></li><li><a href="global.html#categoryRouter">categoryRouter</a></li><li><a href="global.html#categorySchema">categorySchema</a></li><li><a href="global.html#connect">connect</a></li><li><a href="global.html#createNewEvent">createNewEvent</a></li><li><a href="global.html#eventAPI">eventAPI</a></li><li><a href="global.html#eventRouter">eventRouter</a></li><li><a href="global.html#eventSchema">eventSchema</a></li><li><a href="global.html#express">express</a></li><li><a href="global.html#formatDuration">formatDuration</a></li><li><a href="global.html#generateID">generateID</a></li><li><a href="global.html#generateRandomAlphabeticString">generateRandomAlphabeticString</a></li><li><a href="global.html#generateRandomNumbers">generateRandomNumbers</a></li><li><a href="global.html#initialiseOperation">initialiseOperation</a></li><li><a href="global.html#mongoose">mongoose</a></li><li><a href="global.html#operationSchema">operationSchema</a></li><li><a href="global.html#path">path</a></li><li><a href="global.html#router">router</a></li><li><a href="global.html#updateOperation">updateOperation</a></li><li><a href="global.html#url">url</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Fri Sep 15 2023 23:24:32 GMT+1000 (Australian Eastern Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
