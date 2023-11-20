@@ -16,4 +16,3 @@ Utilizes Express.JS, MongoDB, RESTful API, HTML, and Bootstrap.
 ### Postman Info
 
 - The pathnames are highlighted in the Routing Table
-- Strings and items to include in the json body are same as the ones highlighted in assignment 2 specifications
